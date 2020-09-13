@@ -1,44 +1,25 @@
 require('./config/config');
-
+const mongoose = require('mongoose');
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
 
+const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get('/usuario', function (req, res) {
-    res.json('get usuario');
-});
+// parse aplication/json
+app.use(bodyParser.json());
 
-app.post('/usuario', function (req, res) {
+app.use(require('./routes/userController'));
 
-    let body = req.body;
+mongoose.connect(process.env.URLDB,
+    { useNewUrlParser: true, useUnifiedTopology: true },
+    (err, res) => {
 
-    if (body.nombre === undefined) {
-        res.status(400).json({
-            ok: false,
-            mensaje: 'El nombre es necesario'
-        });
-    } else {
-        res.json({
-            persona: body
-        });
-    }
-});
+        if (err) throw err;
+        console.log('Conectado a MongoDB');
 
-
-app.put('/usuario/:id', function (req, res) {
-
-    let id = req.params.id;
-
-    res.json({ id });
-});
-
-
-app.delete('/usuario', function (req, res) {
-    res.json('delete usuario');
-});
+    });
 
 
 app.listen(process.env.PORT, () => {
